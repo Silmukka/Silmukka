@@ -4,7 +4,9 @@
 ##Koodi
 * Leo Lahti
 
-##Idea
+##Idea ja suunnittelu
 * Henri Lappalainen
-* Zeenab 
+* Zeenab Taher
+* Max Olin
+* Leo Lahti
 

@@ -9,14 +9,12 @@ extern crate nickel_postgres;
 extern crate nickel_session as session;
 extern crate nickel_cookies as cookies;
 
-use std::collections::HashMap;
-use std::env;
 use r2d2::NopErrorHandler;
 use postgres::SslMode;
-use nickel::{Nickel, HttpRouter};
-use nickel_postgres::{PostgresMiddleware, PostgresRequestExtensions};
+use nickel::Nickel;
+use nickel_postgres::PostgresMiddleware;
 
-//mod home;
+mod home;
 
 
 /// Tässä tiedostossa
@@ -61,10 +59,11 @@ fn main(){
     let mut serveri = Nickel::new(); //Luodaan Serveri.
     //postgres on huonosti dokumentoitu, purkalla on jotain tekemistä yhteyksien määrällä.
     let osoite = "postgres://postgres@localhost/silmukka".to_string(); 
+    //Käytetään jahka saadaan routereiden tehtäviä kuntoon
     let db = PostgresMiddleware::new(&osoite, 
                                      SslMode::None,
                                      5, //Purkka, nickel_postgres huonosti dokumentoitu
-                                     Box::new(NopErrorHandler)).unwrap();*/
+                                     Box::new(NopErrorHandler)).unwrap();
     serveri.utilize(db);
     let mut routers: Vec<nickel::router::router::Router> = Vec::new();
     //Luodaan routerit
