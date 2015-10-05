@@ -1,0 +1,19 @@
+[package]
+name = "silmukka"
+version = "0.1.0"
+authors = ["leo"]
+[dependencies]
+postgres_array="*"
+chrono = "0.2"
+nickel = "*"
+rand = "0.3"
+r2d2 = "*"
+[dependencies.postgres]
+version = "*"
+features = ["chrono"]
+[dependencies.nickel_postgres]
+git = "https://github.com/nickel-org/nickel-postgres.git"
+[dependencies.nickel_session]
+git = "https://github.com/nickel-org/session.git"
+[dependencies.nickel_cookies]
+git = "https://github.com/nickel-org/cookies.git"
