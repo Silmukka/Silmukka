@@ -17,7 +17,7 @@ SIlmukka on toteutettu Rust-kielellä ja käyttää tietokantanaan Postgresql:l�
 Suunnittelijana voit osallistua. Myös jos intoa riittää opettelemaan koodamista niin tervetuloa,
 mutta Rust ei ole aloittelijan kieli.
 ###Osaan koodata mutta en tiedä mikä on Rust
-###[Vastaus](http://lmgtfy.com/?q=Rust+language
+###[Vastaus](http://lmgtfy.com/?q=Rust+language)
 ##Tiedän mikä on Rust mutta en osaa koodata sitä
 ###[Vastaus](https://doc.rust-lang.org/book/)
  
