@@ -8,14 +8,19 @@ extern crate r2d2;
 extern crate nickel_postgres;
 extern crate nickel_session as session;
 extern crate nickel_cookies as cookies;
+extern crate crypto;
+extern crate time;
+extern crate rustc_serialize;
+extern crate hyper;
 
 use r2d2::NopErrorHandler;
 use postgres::SslMode;
 use nickel::Nickel;
 use nickel_postgres::PostgresMiddleware;
+use time::Duration;
 
 mod home;
-
+mod login;
 
 /// Tässä tiedostossa
 ///
@@ -55,22 +60,38 @@ mod home;
 ///kirjoitettuja. Purkaa tulee niistä ainakin aluksi, yritän kirjoittaa niille käyttöohjeet 
 ///englanniksi.
 
+//Purkkasession
+pub struct ServerData;
+pub static SECRET_KEY: &'static cookies::SecretKey = &cookies::SecretKey([0; 32]);
+
+impl cookies::KeyProvider for ServerData {
+    fn key(&self) -> cookies::SecretKey { SECRET_KEY.clone() }
+}
+
+impl session::Store for ServerData {
+    type Session = Option<String>;
+
+    fn timeout() -> Duration {
+            Duration::seconds(5)
+        }
+}
+
 fn main(){
-    let mut serveri = Nickel::new(); //Luodaan Serveri.
+    let mut serveri = Nickel::with_data(ServerData); //Luodaan Serveri.
     //postgres on huonosti dokumentoitu, purkalla on jotain tekemistä yhteyksien määrällä.
     let osoite = "postgres://postgres@localhost/silmukka".to_string(); 
-    //Käytetään jahka saadaan routereiden tehtäviä kuntoon
     let db = PostgresMiddleware::new(&osoite, 
                                      SslMode::None,
                                      5, //Purkka, nickel_postgres huonosti dokumentoitu
                                      Box::new(NopErrorHandler)).unwrap();
-    serveri.utilize(db);
-    let mut routers: Vec<nickel::router::router::Router> = Vec::new();
-    //Luodaan routerit
-    routers.push(home::route()); //"/"
-    for router in routers
-    {
+    serveri.utilize(db); //annetaan middleware serverille
+    //Luodaan routet serverillä
+    let mut routers = vec![home::route()]; //"/"
+    routers.push(login::validation_router());
+    routers.push(login::login_router());
+    for router in routers{
         serveri.utilize(router);
     }
-    serveri.listen("127.0.0.1:6767");
+
+    serveri.listen("127.0.0.1:8080");
 }

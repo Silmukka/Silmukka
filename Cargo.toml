@@ -8,11 +8,15 @@ chrono = "0.2"
 nickel = "*"
 rand = "0.3"
 r2d2 = "*"
+time ="*"
+hyper = "*"
+rust-crypto = "*"
+rustc-serialize = "*"
 [dependencies.postgres]
 version = "*"
 features = ["chrono"]
 [dependencies.nickel_postgres]
-git = "https://github.com/nickel-org/nickel-postgres.git"
+git = "https://github.com/TileHalo/nickel-postgres.git"
 [dependencies.nickel_session]
 git = "https://github.com/nickel-org/session.git"
 [dependencies.nickel_cookies]
