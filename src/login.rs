@@ -2,8 +2,10 @@ use nickel_postgres::PostgresRequestExtensions;
 use session::{Session, CookieSession};
 use nickel::*;
 use std::collections::HashMap;
+//use hyper::*;
 use std::io::Read;
 use ServerData;
+use form_handler;
 //Purkka, tulee muuttumaan
 fn paskahash(hashattava: String)->String
 {
@@ -24,23 +26,9 @@ pub fn validation_router()->router::router::Router<ServerData>{
         valid.post("/valid", middleware!{|req, mut res|//, db|
             let mut form_data = String::new();
             req.origin.read_to_string(&mut form_data).unwrap();
-            let mut u = (String::new(), String::new());
-            //PURKKA ALKAA, yritetään keksiä paremp POST hallinta, kuten PHP:ssä
-            form_data.remove(0);
-            form_data.remove(0);
-            for i in form_data.clone().chars(){
-                if i == '&'
-                {
-                    form_data.remove(0);
-                    form_data.remove(0);
-                    form_data.remove(0);
-                    break;
-                }
-                u.0.push(i);
-                form_data.remove(0);
-            }
-            u.1 = form_data;
-            //PURKKA LOPPUU
+            let form = form_handler::handle_form(&mut form_data);
+            println!("{:?}", form);
+            let u = (form.get("kayttaja").unwrap().to_string(),form.get("salasana").unwrap().to_string());
             let conn = req.db_conn();
             let stmt = conn.prepare("SELECT (suola, salasana) FROM kayttaja WHERE 
                                     kayttajanimi = $1").unwrap();

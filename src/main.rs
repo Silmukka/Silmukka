@@ -15,10 +15,11 @@ extern crate hyper;
 
 use r2d2::NopErrorHandler;
 use postgres::SslMode;
-use nickel::Nickel;
+use nickel::{Nickel, Continue, MiddlewareResult, Request, Response};
 use nickel_postgres::PostgresMiddleware;
 use time::Duration;
 
+mod form_handler;
 mod home;
 mod login;
 
@@ -60,7 +61,12 @@ mod login;
 ///kirjoitettuja. Purkaa tulee niistä ainakin aluksi, yritän kirjoittaa niille käyttöohjeet 
 ///englanniksi.
 
-//Purkkasession
+//Loggeri, requestit
+fn logger<'a, D>(request: &mut Request<D>, response: Response<'a, D>) -> MiddlewareResult<'a, D> {
+    println!("logging request: {:?}", request.origin.uri);
+    Ok(Continue(response))
+}
+//Session ja sen key, ServerData on tarvittava
 pub struct ServerData;
 pub static SECRET_KEY: &'static cookies::SecretKey = &cookies::SecretKey([0; 32]);
 
@@ -78,13 +84,14 @@ impl session::Store for ServerData {
 
 fn main(){
     let mut serveri = Nickel::with_data(ServerData); //Luodaan Serveri.
-    //postgres on huonosti dokumentoitu, purkalla on jotain tekemistä yhteyksien määrällä.
+    //Nickel on huonosti dokumentoitu, purkalla on jotain tekemistä yhteyksien määrällä.
     let osoite = "postgres://postgres@localhost/silmukka".to_string(); 
     let db = PostgresMiddleware::new(&osoite, 
                                      SslMode::None,
                                      5, //Purkka, nickel_postgres huonosti dokumentoitu
                                      Box::new(NopErrorHandler)).unwrap();
-    serveri.utilize(db); //annetaan middleware serverille
+    serveri.utilize(db);
+    serveri.utilize(logger);
     //Luodaan routet serverillä
     let mut routers = vec![home::route()]; //"/"
     routers.push(login::validation_router());
