@@ -2,7 +2,6 @@ use nickel_postgres::PostgresRequestExtensions;
 use session::{Session, CookieSession};
 use nickel::*;
 use std::collections::HashMap;
-//use hyper::*;
 use std::io::Read;
 use ServerData;
 use form_handler;
@@ -14,10 +13,17 @@ fn paskahash(hashattava: String)->String
 pub fn login_router()->router::router::Router<ServerData>
 {
     let mut login: router::router::Router<ServerData> = Nickel::router();
-    login.get("/login", middleware!{|_, res|
+    login.get("/login", middleware!{|req, mut res| <ServerData>
+        match*CookieSession::get_mut(req, &mut res)
+        {
+            Some(_) => *CookieSession::get_mut(req, &mut res) = None,
+            _ => {
+        
         let mut data = HashMap::new();
         data.insert("science", "course");
-        return res.render("assets/login.html", &data);
+        return res.render("assets/login.html", &data);}
+        }
+        "<html><body><script>document.location.href = '/'</script></body></html>"
     });
     return login;
 }
@@ -27,8 +33,7 @@ pub fn validation_router()->router::router::Router<ServerData>{
             let mut form_data = String::new();
             req.origin.read_to_string(&mut form_data).unwrap();
             let form = form_handler::handle_form(&mut form_data);
-            println!("{:?}", form);
-            let u = (form.get("kayttaja").unwrap().to_string(),form.get("salasana").unwrap().to_string());
+           let u = (form.get("kayttaja").unwrap().to_string(),form.get("salasana").unwrap().to_string());
             let conn = req.db_conn();
             let stmt = conn.prepare("SELECT (suola, salasana) FROM kayttaja WHERE 
                                     kayttajanimi = $1").unwrap();

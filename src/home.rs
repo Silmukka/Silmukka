@@ -10,16 +10,20 @@ pub fn route()->Router<ServerData>{
     let mut home: Router<ServerData> = Nickel::router();
     home.get("/", middleware!{|req, mut vastaus| 
         let mut palautetaan = HashMap::new();
-        let mut logged = false;
-        match *CookieSession::get_mut(req, &mut vastaus){
-            Some(_) => logged = true,
-                         _ => ()
-        } 
+        let logged = match *CookieSession::get_mut(req, &mut vastaus){
+        Some(_) => true,
+                  _ => false
+        };
         if logged == false{
-            palautetaan.insert("kirjaudu", "Kirjaudu sisään");
+            palautetaan.insert("kirjaudu".to_string(), "Kirjaudu sisään".to_string());
             return vastaus.render("assets/out_index.html", &palautetaan);
         }
-        palautetaan.insert("kirjaudu", "Kirjaudu ulos");
+        let mut user = "/user/".to_string();
+        // otetaan käyttäjänimi
+        {let ref a: Option<String> = *CookieSession::get_mut(req, &mut vastaus);
+            user.push_str(&(a.clone().unwrap()));}
+        palautetaan.insert("kirjaudu".to_string(), "Kirjaudu ulos".to_string());
+        palautetaan.insert("kayttaja".to_string(), user);
         return vastaus.render("assets/index.html", &palautetaan);
             
         

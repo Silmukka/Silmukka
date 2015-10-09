@@ -9,20 +9,18 @@ pub fn handle_form(_form: &mut str)->HashMap<String, String>
             break;
         }
         let mut temp_hash = ("".to_string(), "".to_string());
-        let mut temp = "".to_string();
+        let mut temp = String::new();
         for c in form.clone().chars(){
-            print!("{}", c);
             if c == '&'
             {
-                temp_hash.1 = temp.clone();
-                temp.remove(0);
+                form.remove(0);
                 break;
             }
             if c == '='
             {
                 temp_hash.0 = temp;
                 temp = "".to_string();
-                temp.remove(0);
+                form.remove(0);
             }
             else
             {
@@ -30,13 +28,12 @@ pub fn handle_form(_form: &mut str)->HashMap<String, String>
                 form.remove(0);
             }
         }
+        temp_hash.1 = temp;
         form_data.insert(temp_hash.0, temp_hash.1);
         if form.is_empty() == true{
             break;
         }
-        
     }
-    println!("{:?}", form_data);
     return form_data;
  
 }

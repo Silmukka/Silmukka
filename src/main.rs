@@ -22,7 +22,7 @@ use time::Duration;
 mod form_handler;
 mod home;
 mod login;
-
+mod event;
 /// Tässä tiedostossa
 ///
 /// Luodaan serveri, käynnistetään se ja luodaan postgres middleware.
@@ -78,7 +78,7 @@ impl session::Store for ServerData {
     type Session = Option<String>;
 
     fn timeout() -> Duration {
-            Duration::seconds(5)
+            Duration::minutes(5)
         }
 }
 
@@ -96,9 +96,12 @@ fn main(){
     let mut routers = vec![home::route()]; //"/"
     routers.push(login::validation_router());
     routers.push(login::login_router());
+    routers.push(event::create_event());
+    routers.push(event::watcher());
+    routers.push(event::creator());
     for router in routers{
         serveri.utilize(router);
     }
 
-    serveri.listen("127.0.0.1:8080");
+    serveri.listen("127.0.0.1:6767");
 }
