@@ -12,12 +12,14 @@ extern crate crypto;
 extern crate time;
 extern crate rustc_serialize;
 extern crate hyper;
+extern crate md5;
 
 use r2d2::NopErrorHandler;
 use postgres::SslMode;
 use nickel::{Nickel, Continue, MiddlewareResult, Request, Response};
 use nickel_postgres::PostgresMiddleware;
 use time::Duration;
+use std::hash::{Hash, SipHasher, Hasher};
 
 mod form_handler;
 mod home;
@@ -60,7 +62,13 @@ mod event;
 ///Purkasta. Nickel postgres, cookie ja session on huonosti (ei dokumentoitu tai kommentoitu) 
 ///kirjoitettuja. Purkaa tulee niistä ainakin aluksi, yritän kirjoittaa niille käyttöohjeet 
 ///englanniksi.
-
+fn hashaus<T>(obj: T) -> u64
+    where T: Hash
+{
+    let mut hasher = SipHasher::new();
+    obj.hash(&mut hasher);
+    hasher.finish()
+}
 //Loggeri, requestit
 fn logger<'a, D>(request: &mut Request<D>, response: Response<'a, D>) -> MiddlewareResult<'a, D> {
     println!("logging request: {:?}", request.origin.uri);

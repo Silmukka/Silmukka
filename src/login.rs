@@ -6,10 +6,7 @@ use std::io::Read;
 use ServerData;
 use form_handler;
 //Purkka, tulee muuttumaan
-fn paskahash(hashattava: String)->String
-{
-        hashattava
-}
+use hashaus;
 pub fn login_router()->router::router::Router<ServerData>
 {
     let mut login: router::router::Router<ServerData> = Nickel::router();
@@ -37,11 +34,11 @@ pub fn validation_router()->router::router::Router<ServerData>{
             let conn = req.db_conn();
             let stmt = conn.prepare("SELECT (suola, salasana) FROM kayttaja WHERE 
                                     kayttajanimi = $1").unwrap();
-            let mut b: bool = false;
+            let mut b: bool = false; 
             for row in stmt.query(&[&u.0.clone()]).unwrap(){
                 let suola: String = row.get(0);
-                let tiiviste: String = row.get(1);
-                if paskahash((suola+&u.1).to_string()) == tiiviste
+                let tiiviste: i64 = row.get(1);
+                if hashaus((suola+&u.1).to_string()) == tiiviste as u64
                 {
                     b = true;
                     break;
