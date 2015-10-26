@@ -17,7 +17,7 @@ md5 = "0.1.1"
 version = "*"
 features = ["chrono"]
 [dependencies.nickel_postgres]
-git = "https://github.com/TileHalo/nickel-postgres.git"
+git = "https://github.com/nickel-org/nickel-postgres.git"
 [dependencies.nickel_session]
 git = "https://github.com/nickel-org/session.git"
 [dependencies.nickel_cookies]

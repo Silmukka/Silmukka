@@ -1,12 +1,23 @@
 {{> header }}
 		<h3>Luo Tapahtuma</h3>
-		<form>
+		<form role="form">
+		<div class="form-group" style="text-align:left;width:60%;">
                 Nimi: <br>
                 <input type="text" name="nimi"><br>
                 Kuvaus: <br>
-                <input type="text" name="kuvaus"><br>
-		Lista: <br>
-		<input type="text" name="lista"><br>
+		<textarea class="form-control" rows="5" name="kuvaus"></textarea><br>
+		Henkilökohtaiset varusteet: <br>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+		Henkilökohtaiset varusteet: <br>
+		<textarea class="form-control" rows="10" name="lista"></textarea>
+			</div>
+			<div class="col-md-6">
+		Vartiokohtaiset varusteet: <br>
+		<textarea class="form-control" rows="10" name="vlista"></textarea>
+			</div>
+		</div>
 		<button type="submit" formenctype="application/x-www-form-urlencoded" formaction="/event_create" formmethod="post">Luo tapahtuma</button>
 		</form>
     </body>

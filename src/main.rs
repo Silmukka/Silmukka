@@ -16,7 +16,7 @@ extern crate md5;
 
 use r2d2::NopErrorHandler;
 use postgres::SslMode;
-use nickel::{Nickel, Continue, MiddlewareResult, Request, Response};
+use nickel::Nickel;
 use nickel_postgres::PostgresMiddleware;
 use time::Duration;
 use std::hash::{Hash, SipHasher, Hasher};
@@ -25,6 +25,9 @@ mod form_handler;
 mod home;
 mod login;
 mod event;
+mod user;
+
+pub use user::parse; 
 /// Tässä tiedostossa
 ///
 /// Luodaan serveri, käynnistetään se ja luodaan postgres middleware.
@@ -69,11 +72,6 @@ fn hashaus<T>(obj: T) -> u64
     obj.hash(&mut hasher);
     hasher.finish()
 }
-//Loggeri, requestit
-fn logger<'a, D>(request: &mut Request<D>, response: Response<'a, D>) -> MiddlewareResult<'a, D> {
-    println!("logging request: {:?}", request.origin.uri);
-    Ok(Continue(response))
-}
 //Session ja sen key, ServerData on tarvittava
 pub struct ServerData;
 pub static SECRET_KEY: &'static cookies::SecretKey = &cookies::SecretKey([0; 32]);
@@ -86,7 +84,7 @@ impl session::Store for ServerData {
     type Session = Option<String>;
 
     fn timeout() -> Duration {
-            Duration::minutes(5)
+            Duration::minutes(55)
         }
 }
 
@@ -99,7 +97,6 @@ fn main(){
                                      5, //Purkka, nickel_postgres huonosti dokumentoitu
                                      Box::new(NopErrorHandler)).unwrap();
     serveri.utilize(db);
-    serveri.utilize(logger);
     //Luodaan routet serverillä
     let mut routers = vec![home::route()]; //"/"
     routers.push(login::validation_router());
@@ -107,6 +104,9 @@ fn main(){
     routers.push(event::create_event());
     routers.push(event::watcher());
     routers.push(event::creator());
+    routers.push(user::register_router());
+    routers.push(user::valid_router());
+    routers.push(user::user_router());
     for router in routers{
         serveri.utilize(router);
     }

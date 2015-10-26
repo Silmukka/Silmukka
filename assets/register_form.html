@@ -1,0 +1,26 @@
+{{>header}}
+	<form role="form">
+		<h3>{{virhe}}</h3>
+		Käyttäjänimi<br>
+		<input type="text" name="kayttaja"><br>
+		Sähköposti<br>
+		<input type="text" name="sposti"><br>
+		Salasana<br>
+		<input type="password" name="salasana"><br>
+		Salasana<br>
+		<input type="password" name="salis"><br>
+		Lippukunta<br>
+		<input type="text" name="lpk"><br>
+		Nimi<br>
+		<input type="text" name="nimi"><br>
+		<h6>Ikäkausi</h6><br>
+		<input type="radio" name="ika" value="Sudenpentu"> Sudenpentu<br>
+		<input type="radio" name="ika" value="Seikkailija"> Seikkailija<br>
+		<input type="radio" name="ika" value="Tarpoja"> Tarpoja<br>
+		<input type="radio" name="ika" value="Samoaja"> Samoaja<br>
+		<input type="radio" name="ika" value="Vaeltaja"> Vaeltaja<br>
+		<input type="radio" name="ika" value="Aikuinen"> Aikuinen<br>
+		<button type="submit" formenctype="application/x-www-form-urlencoded" formaction="/valid_register" formmethod="post">Rekisteröidy</button>
+	</form>
+	</body>
+</html>

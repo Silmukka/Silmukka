@@ -1,11 +1,11 @@
 use nickel_postgres::PostgresRequestExtensions;
+
 use session::{Session, CookieSession};
 use nickel::*;
 use std::collections::HashMap;
 use std::io::Read;
 use ServerData;
 use form_handler;
-//Purkka, tulee muuttumaan
 use hashaus;
 pub fn login_router()->router::router::Router<ServerData>
 {
@@ -30,22 +30,28 @@ pub fn validation_router()->router::router::Router<ServerData>{
             let mut form_data = String::new();
             req.origin.read_to_string(&mut form_data).unwrap();
             let form = form_handler::handle_form(&mut form_data);
-           let u = (form.get("kayttaja").unwrap().to_string(),form.get("salasana").unwrap().to_string());
+            let u = (form.get("kayttaja").unwrap().to_string(),form.get("salasana").unwrap().to_string());
             let conn = req.db_conn();
-            let stmt = conn.prepare("SELECT (suola, salasana) FROM kayttaja WHERE 
+            let stmt = conn.prepare("SELECT * FROM kayttaja WHERE 
                                     kayttajanimi = $1").unwrap();
-            let mut b: bool = false; 
+            let mut b: bool = false;
             for row in stmt.query(&[&u.0.clone()]).unwrap(){
-                let suola: String = row.get(0);
-                let tiiviste: i64 = row.get(1);
+                let suola: String = row.get("suola");
+                let tiiviste: i64 = row.get("salasana");
                 if hashaus((suola+&u.1).to_string()) == tiiviste as u64
                 {
                     b = true;
                     break;
                 }
             }
-            let a =if b == false{
+            let a =if b == true {
                 *CookieSession::get_mut(req, &mut res) = Some(u.0);
+                
+                "<html><body><script>document.location.href = '/'</script></body></html>"
+            }
+            //Testailuja, palauttaa TEST-käyttäjän. Use wisely.
+            else if b == false{
+                *CookieSession::get_mut(req, &mut res) = Some("TEST".to_string());
                 
                 "<html><body><script>document.location.href = '/'</script></body></html>"
             }
