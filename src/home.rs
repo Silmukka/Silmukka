@@ -18,15 +18,15 @@ pub fn route()->Router<ServerData>{
             palautetaan.insert("kirjaudu".to_string(), "Kirjaudu sisään".to_string());
             return vastaus.render("assets/out_index.html", &palautetaan);
         }
-        let mut user = "/user/".to_string();
-        // otetaan käyttäjänimi
-        {let ref a: Option<String> = *CookieSession::get_mut(req, &mut vastaus);
-            user.push_str(&(a.clone().unwrap()));}
-        palautetaan.insert("kirjaudu".to_string(), "Kirjaudu ulos".to_string());
-        palautetaan.insert("kayttaja".to_string(), user);
-        return vastaus.render("assets/index.html", &palautetaan);
-            
-        
+        else{
+            let mut user = "/user/".to_string();
+            // otetaan käyttäjänimi
+            {let ref a: Option<String> = *CookieSession::get_mut(req, &mut vastaus);
+                user.push_str(&(a.clone().unwrap()));}
+            palautetaan.insert("kirjaudu".to_string(), "Kirjaudu ulos".to_string());
+            palautetaan.insert("kayttaja".to_string(), user);
+            return vastaus.render("assets/index.html", &palautetaan);
+        }
     });
     return home;
 }

@@ -19,3 +19,7 @@ Kehittäminen lopetetaan aikaisintaan versioon 1.0.0, jos ei käyttöä/alustaa.
 11. Mobiiliappi joskus vuoden vaihteessa 2016/2017 viimeistään. Versio 1.0.0
 13. Ylläpitoa...
 
+##Sivujuonet, päivittyy satunnaisesti
+* Käytä nickel_auth cratea
+* Vaihda md5:tosesta AES-algoritmiin
+* Poistele purkkaa, kuten javascript-uudelleenohjaus

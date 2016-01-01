@@ -1,3 +1,6 @@
+#![feature(box_syntax, box_patterns)]
+
+#[deny(warnings)]
 #[macro_use] extern crate nickel;
 
 extern crate chrono;
@@ -10,8 +13,8 @@ extern crate nickel_session as session;
 extern crate nickel_cookies as cookies;
 extern crate crypto;
 extern crate time;
-extern crate rustc_serialize;
-extern crate hyper;
+//extern crate rustc_serialize;
+//extern crate hyper;
 extern crate md5;
 
 use r2d2::NopErrorHandler;

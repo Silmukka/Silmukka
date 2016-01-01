@@ -1,9 +1,10 @@
 use nickel_postgres::PostgresRequestExtensions;
 use session::{Session, CookieSession};
-use nickel::*;
+use nickel::{Nickel, HttpRouter, router};
 use std::collections::HashMap;
 use postgres_array::array::Array;
 use std::io::Read;
+use nickel::extensions::Redirect;
 use ServerData;
 use form_handler;
 pub type Reititin = router::router::Router<ServerData>;
@@ -12,30 +13,32 @@ pub fn create_event()->Reititin
 {
     let mut creator: router::router::Router<ServerData> = Nickel::router();
     creator.get("/create_event", middleware!{ |req, mut res| <ServerData>
-        let conn = req.db_conn();
-        let stmt = conn.prepare("select ika from kayttaja where kayttajanimi = $1").unwrap();
-        let a = "Foul play".to_string();
         let mut man = String::new();
-        assert_eq!(man, String::new());
-            {man= match *CookieSession::get_mut(req, &mut res){
-                Some(ref name)=>name,             
-                _ => &a
-                }.to_string();
-        }
-        for row in stmt.query(&[&man]).unwrap()
-        {
-            let ik: String  = row.get("ika");
-            let ika = &ik;
-            if ika == ""
-            {
-                break;
+        { 
+            match *CookieSession::get_mut(req, &mut res){
+                Some(ref name)=>{man=name.to_string()},
+                _ => {} 
             }
-            
         }
-        let mut data = HashMap::new();
-        data.insert("Kirjaudu", "Kirjaudu ulos");
-        return res.render("assets/creator.html", &data);
-
+        if man != String::new(){
+            let conn = req.db_conn();
+            let stmt = conn.prepare("select ika from kayttaja where kayttajanimi = $1").unwrap();
+            for row in stmt.query(&[&man]).unwrap()
+            {
+                let ik: String  = row.get("ika");
+                let ika = &ik;
+                if ika == ""
+                {
+                    break;
+                } 
+            }
+            let mut data = HashMap::new();
+            data.insert("Kirjaudu", "Kirjaudu ulos");
+            return res.render("assets/creator.html", &data);
+        }
+        else{
+            return res.redirect("/");
+        }
     });
     return creator;
 }
